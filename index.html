@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Tap Challenge</title>
+    <style>
+        /* ===== GLOBAL STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* ===== LOGIN PAGE STYLES ===== */
+        #login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: all 0.5s ease;
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+            transform: translateY(0);
+            opacity: 1;
+            transition: all 0.5s ease;
+        }
+        
+        .login-box.hidden {
+            transform: translateY(-50px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .login-box h2 {
+            color: #4b5563;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        
+        .login-box input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        .login-box input:focus {
+            border-color: #6366f1;
+            outline: none;
+        }
+        
+        .login-box button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        
+        .login-box button:hover {
+            background: #4f46e5;
+        }
+        
+        .forgot-link {
+            display: block;
+            margin-top: 15px;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        
+        .rating {
+            color: gold;
+            font-size: 24px;
+            margin-top: 20px;
+            letter-spacing: 5px;
+        }
+        
+        /* ===== DASHBOARD STYLES ===== */
+        #dashboard {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        header {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: flex-end;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #4b5563;
+        }
+        
+        .live-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .game-area {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .left-box, .right-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            width: 250px;
+        }
+        
+        .left-box h3, .right-box h3 {
+            color: #4b5563;
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #cookie-btn {
+            font-size: 100px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.1s;
+            margin-bottom: 20px;
+        }
+        
+        #cookie-btn:active {
+            transform: scale(0.95);
+        }
+        
+        #cookies-count {
+            font-size: 24px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 30px;
+        }
+        
+        .boost-btn, .ad-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 250px;
+        }
+        
+        .boost-btn:hover, .ad-btn:hover {
+            background: #4f46e5;
+        }
+        
+        .ad-btn {
+            background: #f59e0b;
+        }
+        
+        .ad-btn:hover {
+            background: #d97706;
+        }
+        
+        #leaderboard {
+            list-style-type: none;
+        }
+        
+        #leaderboard li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        footer {
+            background: white;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .telegram-btn {
+            background: #0088cc;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        
+        .telegram-btn:hover {
+            background: #0077b5;
+        }
+        
+        /* ===== ANIMATIONS ===== */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .cookie-float {
+            animation: float 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== LOGIN PAGE ===== -->
+    <div id="login-page">
+        <div class="login-box" id="login-box">
+            <h2>🍪 COOKIE TAP CHALLENGE</h2>
+            <input type="text" id="username" placeholder="Username (Ex: CookieMaster1!)" 
+                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required>
+            <input type="password" id="password" placeholder="Password">
+            <input type="email" id="email" placeholder="Email (For Recovery)">
+            <button onclick="login()">START TAPPING →</button>
+            <a href="#" class="forgot-link">Forgot Password?</a>
+            <div class="rating">★★★★★</div>
+        </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="dashboard">
+        <header>
+            <div class="user-info">
+                <span class="user-name" id="user-name">Player1 <span class="live-dot"></span></span>
+            </div>
+        </header>
+        
+        <div class="game-area">
+            <div class="left-box">
+                <h3>🏆 LIVE LEADERBOARD</h3>
+                <ol id="leaderboard">
+                    <!-- Leaderboard will be populated by JavaScript -->
+                </ol>
+            </div>
+            
+            <div class="center">
+                <button id="cookie-btn" class="cookie-float">🍪</button>
+                <p id="cookies-count">0 Cookies</p>
+                <button class="boost-btn" onclick="buyBoost()">🔥 BOOST YOUR COOKIES ($10)</button>
+                <button class="ad-btn" onclick="watchAd()">📺 Watch Ad (2x for 10m)</button>
+            </div>
+            
+            <div class="right-box">
+                <h3>YOUR STATS</h3>
+                <p>Rank: <span id="user-rank">#45</span></p>
+                <p>Cookies: <span id="user-cookies">0</span></p>
+            </div>
+        </div>
+        
+        <footer>
+            <a href="https://t.me/yourgroup" class="telegram-btn">🏆 Join Telegram for Rewards</a>
+        </footer>
+    </div>
+
+    <script>
+        // ===== GAME VARIABLES =====
+        let cookies = 0;
+        let isBoosted = false;
+        let adCooldown = false;
+        const players = [
+            { name: "CookiePro", cookies: 1250 },
+            { name: "TapMaster", cookies: 1100 },
+            { name: "SweetTooth", cookies: 950 },
+            { name: "BiscuitKing", cookies: 800 },
+            { name: "CrunchLord", cookies: 700 }
+        ];
+
+        // ===== DOM ELEMENTS =====
+        const loginPage = document.getElementById('login-page');
+        const loginBox = document.getElementById('login-box');
+        const dashboard = document.getElementById('dashboard');
+        const cookieBtn = document.getElementById('cookie-btn');
+        const cookiesCount = document.getElementById('cookies-count');
+        const userCookies = document.getElementById('user-cookies');
+        const userRank = document.getElementById('user-rank');
+        const leaderboard = document.getElementById('leaderboard');
+        const userName = document.getElementById('user-name');
+
+        // ===== FUNCTIONS =====
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            
+            // Validate username pattern
+            if (!username.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
+                alert('Username must contain:\n- 1 Uppercase letter\n- 1 Lowercase letter\n- 1 Number\n- 1 Special character');
+                return;
+            }
+            
+            // Validate other fields
+            if (!password || !email) {
+                alert('Please fill all fields!');
+                return;
+            }
+            
+            // Animate transition
+            loginBox.classList.add('hidden');
+            setTimeout(() => {
+                loginPage.style.display = 'none';
+                dashboard.style.display = 'flex';
+                userName.textContent = username + ' ';
+                
+                // Start with 100 cookies as bonus
+                cookies = 100;
+                updateCookies();
+                updateLeaderboard();
+            }, 500);
+        }
+
+        function tapCookie() {
+            cookies += isBoosted ? 2 : 1;
+            updateCookies();
+            
+            // Add click effect
+            cookieBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                cookieBtn.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        function updateCookies() {
+            cookiesCount.textContent = cookies + ' Cookies';
+            userCookies.textContent = cookies;
+            
+            // Update rank based on cookies
+            const allPlayers = [...players, { name: userName.textContent.trim(), cookies: cookies }];
+            allPlayers.sort((a, b) => b.cookies - a.cookies);
+            const rank = allPlayers.findIndex(p => p.name === userName.textContent.trim()) + 1;
+            userRank.textContent = '#' + rank;
+        }
+
+        function buyBoost() {
+            if (confirm('Get 5000 cookies + 2x taps for 30 days? ($10)')) {
+                cookies += 5000;
+                isBoosted = true;
+                updateCookies();
+                
+                // Boost expires after 30 days (for demo: 5 minutes)
+                setTimeout(() => {
+                    isBoosted = false;
+                    alert('Your boost has expired!');
+                }, 300000); // 5 minutes for demo (change to 2592000000 for 30 days)
+            }
+        }
+
+        function watchAd() {
+            if (adCooldown) {
+                alert('Ad boost is on cooldown! Try again later.');
+                return;
+            }
+            
+            if (confirm('Watch a 30-second ad for 10-minute 2x boost?')) {
+                isBoosted = true;
+                adCooldown = true;
+                
+                // Boost expires after 10 minutes
+                setTimeout(() => {
+                    isBoosted = false;
+                }, 600000); // 10 minutes
+                
+                // Cooldown expires after 30 minutes
+                setTimeout(() => {
+                    adCooldown = false;
+                }, 1800000); // 30 minutes
+            }
+        }
+
+        function updateLeaderboard() {
+            // Add current player to leaderboard
+            const allPlayers = [...players, { name: userName.textContent.trim(), cookies: cookies }];
+            allPlayers.sort((a, b) => b.cookies - a.cookies);
+            
+            // Display top 5
+            leaderboard.innerHTML = '';
+            allPlayers.slice(0, 5).forEach((player, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${index + 1}. ${player.name}</span>
+                    <span>${player.cookies} 🍪</span>
+                `;
+                leaderboard.appendChild(li);
+            });
+        }
+
+        // ===== EVENT LISTENERS =====
+        cookieBtn.addEventListener('click', tapCookie);
+        
+        // Update leaderboard every 5 seconds
+        setInterval(updateLeaderboard, 5000);
+    </script>
+</body>
+</html>
