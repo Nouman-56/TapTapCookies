@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cookie Master Pro</title>
+    <style>
+        /* ===== GLOBAL STYLES ===== */
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* ===== LOGIN PAGE ===== */
+        #login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #6c5ce7, #fd79a8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .main-heading {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            line-height: 1.4;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .highlight {
+            background: linear-gradient(to right, #e84393, #fd79a8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+            outline: none;
+        }
+        
+        .referral-group {
+            margin-top: 15px;
+            text-align: left;
+        }
+        
+        .referral-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+        
+        .login-btn {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 16px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .forgot-link {
+            display: block;
+            margin-top: 20px;
+            color: #636e72;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .rating {
+            margin-top: 15px;
+        }
+        
+        .star {
+            color: gold;
+            font-size: 1.5rem;
+            margin: 0 2px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* ===== DASHBOARD ===== */
+        #dashboard {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .live-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .live-dot {
+            height: 10px;
+            width: 10px;
+            background-color: var(--success);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+            box-shadow: 0 0 10px var(--success);
+        }
+        
+        .live-text {
+            color: var(--success);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .timer {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .game-area {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            position: relative;
+        }
+        
+        .left-box, .right-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 280px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .box-title {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .box-title i {
+            color: var(--primary);
+        }
+        
+        .center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .cookie-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        #cookie-btn {
+            font-size: 8rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.1s;
+            animation: float 3s ease-in-out infinite;
+            color: #e17055;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+        }
+        
+        #cookie-btn:active {
+            transform: scale(0.95) rotate(10deg);
+            animation: none;
+        }
+        
+        .cookie-shine {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        #cookie-btn:active + .cookie-shine {
+            opacity: 1;
+        }
+        
+        #cookies-count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 280px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.6);
+        }
+        
+        .action-btn:active {
+            transform: translateY(0);
+        }
+        
+        .action-btn i {
+            font-size: 1.1rem;
+        }
+        
+        .boost-btn {
+            background: linear-gradient(to right, #e84393, #fd79a8);
+            box-shadow: 0 5px 15px rgba(232, 67, 147, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        .boost-btn:hover {
+            box-shadow: 0 8px 20px rgba(232, 67, 147, 0.6);
+        }
+        
+        .ad-btn {
+            background: linear-gradient(to right, #fdcb6e, #ffeaa7);
+            color: var(--dark);
+            box-shadow: 0 5px 15px rgba(253, 203, 110, 0.4);
+        }
+        
+        .ad-btn:hover {
+            box-shadow: 0 8px 20px rgba(253, 203, 110, 0.6);
+        }
+        
+        #leaderboard {
+            list-style-type: none;
+        }
+        
+        #leaderboard li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        #leaderboard li:hover {
+            background: rgba(0, 0, 0, 0.02);
+            transform: translateX(5px);
+        }
+        
+        #leaderboard li span:first-child {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rank {
+            font-weight: 700;
+            color: var(--primary);
+            width: 20px;
+            text-align: center;
+        }
+        
+        .player-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 120px;
+        }
+        
+        .player-cookies {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .stats-label {
+            color: #636e72;
+            font-weight: 500;
+        }
+        
+        .stats-value {
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .referral-code {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin-top: 15px;
+            word-break: break-all;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .telegram-btn {
+            background: linear-gradient(to right, #0088cc, #00aced);
+            color: white;
+            padding: 14px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+        }
+        
+        .telegram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
+        }
+        
+        /* ===== PARTICLES BACKGROUND ===== */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .left-box, .right-box {
+                width: 100%;
+            }
+            
+            #cookie-btn {
+                font-size: 6rem;
+            }
+            
+            .action-buttons {
+                max-width: 100%;
+            }
+            
+            .main-heading {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- ===== PARTICLES BACKGROUND ===== -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- ===== LOGIN PAGE ===== -->
+    <div id="login-page">
+        <div class="login-box" id="login-box">
+            <div class="logo">🍪</div>
+            <h2 class="main-heading">Participate in the <span class="highlight">Cookies Competition</span> for a fair chance to win a gift worth <span class="highlight">Rs. 60,000!</span> Every month</h2>
+            
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Username (Ex: CookieMaster1!)" 
+                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required>
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password">
+            </div>
+            
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email (For Recovery)">
+            </div>
+            
+            <div class="referral-group">
+                <label class="referral-label">Referral Code (Optional):</label>
+                <input type="text" id="referral-code" placeholder="Enter friend's code">
+            </div>
+            
+            <button class="login-btn" onclick="login()">
+                <i class="fas fa-sign-in-alt"></i> START TAPPING
+            </button>
+            
+            <a href="#" class="forgot-link">Forgot Password?</a>
+            
+            <div class="rating">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="dashboard">
+        <header>
+            <div class="user-info">
+                <div class="live-status">
+                    <span class="user-name" id="user-name">Player1</span>
+                    <span class="live-dot"></span>
+                    <span class="live-text">LIVE</span>
+                </div>
+            </div>
+            <div class="timer" id="month-timer">Month ends in: 30d 23h 59m</div>
+        </header>
+        
+        <div class="game-area">
+            <div class="left-box">
+                <h3 class="box-title"><i class="fas fa-trophy"></i> LIVE LEADERBOARD</h3>
+                <ol id="leaderboard">
+                    <!-- Filled by JavaScript -->
+                </ol>
+            </div>
+            
+            <div class="center">
+                <div class="cookie-container">
+                    <button id="cookie-btn">🍪</button>
+                    <div class="cookie-shine"></div>
+                </div>
+                
+                <p id="cookies-count">0 Cookies</p>
+                
+                <div class="action-buttons">
+                    <button class="action-btn boost-btn" onclick="buyBoost()">
+                        <i class="fas fa-bolt"></i> BOOST PLAN ($10) - 5000 Cookies
+                    </button>
+                    
+                    <button class="action-btn ad-btn" onclick="watchAd()">
+                        <i class="fas fa-ad"></i> Watch Ad (2x for 10m)
+                    </button>
+                </div>
+            </div>
+            
+            <div class="right-box">
+                <h3 class="box-title"><i class="fas fa-chart-line"></i> YOUR STATS</h3>
+                
+                <div class="stats-item">
+                    <span class="stats-label">Rank:</span>
+                    <span class="stats-value" id="user-rank">#45</span>
+                </div>
+                
+                <div class="stats-item">
+                    <span class="stats-label">Cookies:</span>
+                    <span class="stats-value" id="user-cookies">0</span>
+                </div>
+                
+                <div class="stats-item">
+                    <span class="stats-label">Multiplier:</span>
+                    <span class="stats-value" id="user-multiplier">1x</span>
+                </div>
+                
+                <div class="stats-item">
+                    <span class="stats-label">Referrals:</span>
+                    <span class="stats-value" id="user-referrals">0</span>
+                </div>
+                
+                <div class="stats-item">
+                    <span class="stats-label">Your Code:</span>
+                </div>
+                
+                <div class="referral-code" id="referral-code-display">
+                    COOKIE-XXXXXX
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <a href="https://t.me/yourgroup" class="telegram-btn">
+                <i class="fab fa-telegram"></i> Join Telegram for Rewards
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        // ===== GAME VARIABLES =====
+        let cookies = 0;
+        let isBoosted = false;
+        let adCooldown = false;
+        let referrals = 0;
+        let referralCode = generateReferralCode();
+        const players = [
+            { name: "CookiePro", cookies: 1250 },
+            { name: "TapMaster", cookies: 1100 },
+            { name: "SweetTooth", cookies: 950 },
+            { name: "BiscuitKing", cookies: 800 },
+            { name: "CrunchLord", cookies: 700 }
+        ];
+        
+        // Month end timer (30 days from now)
+        let monthEndTime = new Date();
+        monthEndTime.setDate(monthEndTime.getDate() + 30);
+        
+        // ===== DOM ELEMENTS =====
+        const loginPage = document.getElementById('login-page');
+        const dashboard = document.getElementById('dashboard');
+        const cookieBtn = document.getElementById('cookie-btn');
+        const cookiesCount = document.getElementById('cookies-count');
+        const userCookies = document.getElementById('user-cookies');
+        const userRank = document.getElementById('user-rank');
+        const userMultiplier = document.getElementById('user-multiplier');
+        const userReferrals = document.getElementById('user-referrals');
+        const referralCodeDisplay = document.getElementById('referral-code-display');
+        const leaderboard = document.getElementById('leaderboard');
+        const userName = document.getElementById('user-name');
+        const monthTimer = document.getElementById('month-timer');
+        const particlesContainer = document.getElementById('particles');
+
+        // ===== PREVENT ZOOMING =====
+        document.addEventListener('touchmove', function(e) {
+            if(e.scale !== 1) { e.preventDefault(); }
+        }, { passive: false });
+
+        // ===== CREATE PARTICLES =====
+        function createParticles() {
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 5 + 2;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 10 + 10;
+                const opacity = Math.random() * 0.5 + 0.1;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.opacity = opacity;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // ===== GENERATE REFERRAL CODE =====
+        function generateReferralCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return 'COOKIE-' + result;
+        }
+
+        // ===== UPDATE MONTH TIMER =====
+        function updateMonthTimer() {
+            const now = new Date();
+            const diff = monthEndTime - now;
+            
+            if (diff <= 0) {
+                // Month ended - reset competition
+                monthTimer.textContent = "New competition started!";
+                cookies = 0;
+                isBoosted = false;
+                updateCookies();
+                monthEndTime = new Date();
+                monthEndTime.setDate(monthEndTime.getDate() + 30);
+                alert("New competition started! All cookies reset to 0.");
+            } else {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                monthTimer.textContent = `Month ends in: ${days}d ${hours}h ${minutes}m`;
+            }
+        }
+
+        // ===== FUNCTIONS =====
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const referralInput = document.getElementById('referral-code').value;
+            
+            // Validate username pattern
+            if (!username.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
+                alert('Username must contain:\n- 1 Uppercase letter\n- 1 Lowercase letter\n- 1 Number\n- 1 Special character');
+                return;
+            }
+            
+            // Validate other fields
+            if (!password || !email) {
+                alert('Please fill all fields!');
+                return;
+            }
+            
+            // Check referral code if entered
+            if (referralInput && referralInput !== referralCode) {
+                // In real app, you'd validate against database
+                alert('Valid referral code! You got 1 day 2x boost!');
+                isBoosted = true;
+                setTimeout(() => {
+                    isBoosted = false;
+                    updateCookies();
+                    alert('Your referral boost has expired!');
+                }, 86400000); // 24 hours
+            }
+            
+            // Animate transition
+            document.getElementById('login-box').classList.add('hidden');
+            setTimeout(() => {
+                loginPage.style.display = 'none';
+                dashboard.style.display = 'flex';
+                userName.textContent = username;
+                referralCodeDisplay.textContent = referralCode;
+                
+                // Start with 100 cookies as bonus
+                cookies = 100;
+                updateCookies();
+                updateLeaderboard();
+                createParticles();
+                updateMonthTimer();
+                setInterval(updateMonthTimer, 60000); // Update timer every minute
+            }, 500);
+        }
+
+        function tapCookie() {
+            cookies += isBoosted ? 2 : 1;
+            updateCookies();
+            
+            // Add click effect
+            cookieBtn.style.transform = 'scale(0.95) rotate(10deg)';
+            setTimeout(() => {
+                cookieBtn.style.transform = 'scale(1) rotate(0)';
+            }, 100);
+        }
+
+        function updateCookies() {
+            cookiesCount.textContent = cookies + ' Cookies';
+            userCookies.textContent = cookies;
+            userMultiplier.textContent = isBoosted ? '2x' : '1x';
+            userReferrals.textContent = referrals;
+            
+            // Update rank based on cookies
+            const allPlayers = [...players, { name: userName.textContent, cookies: cookies }];
+            allPlayers.sort((a, b) => b.cookies - a.cookies);
+            const rank = allPlayers.findIndex(p => p.name === userName.textContent) + 1;
+            userRank.textContent = '#' + rank;
+        }
+
+        function buyBoost() {
+            if (confirm('Get 5000 cookies + 2x taps for 30 days? ($10)')) {
+                cookies += 5000;
+                isBoosted = true;
+                updateCookies();
+                
+                // Boost expires after 30 days
+                setTimeout(() => {
+                    isBoosted = false;
+                    updateCookies();
+                    alert('Your boost has expired!');
+                }, 2592000000); // 30 days
+            }
+        }
+
+        function watchAd() {
+            if (adCooldown) {
+                alert('Ad boost is on cooldown! Try again later.');
+                return;
+            }
+            
+            if (confirm('Watch a 30-second ad for 10-minute 2x boost?')) {
+                isBoosted = true;
+                adCooldown = true;
+                updateCookies();
+                
+                // Boost expires after 10 minutes
+                setTimeout(() => {
+                    isBoosted = false;
+                    updateCookies();
+                }, 600000); // 10 minutes
+                
+                // Cooldown expires after 30 minutes
+                setTimeout(() => {
+                    adCooldown = false;
+                }, 1800000); // 30 minutes
+            }
+        }
+
+        function updateLeaderboard() {
+            // Add current player to leaderboard
+            const allPlayers = [...players, { name: userName.textContent, cookies: cookies }];
+            allPlayers.sort((a, b) => b.cookies - a.cookies);
+            
+            // Display top 5
+            leaderboard.innerHTML = '';
+            allPlayers.slice(0, 5).forEach((player, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>
+                        <span class="rank">${index + 1}</span>
+                        <span class="player-name">${player.name}</span>
+                    </span>
+                    <span class="player-cookies">${player.cookies} 🍪</span>
+                `;
+                leaderboard.appendChild(li);
+            });
+        }
+
+        // ===== EVENT LISTENERS =====
+        cookieBtn.addEventListener('click', tapCookie);
+        
+        // Update leaderboard every 5 seconds
+        setInterval(updateLeaderboard, 5000);
+    </script>
+</body>
+</html>
